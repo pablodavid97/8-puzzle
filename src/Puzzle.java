@@ -5,13 +5,12 @@ import java.util.PriorityQueue;
 public class Puzzle {
 
     public int dimension = 3;
-    public int COST_NUMBER = 0;
 
     // Bottom, left, top, right
     int[] row = { 1, 0, -1, 0 };
     int[] col = { 0, -1, 0, 1 };
 
-    public int calculateCost(int[][] initial, int[][] goal) {
+    public int calculateMissplacedTiles(int[][] initial, int[][] goal) {
         int count = 0;
         int n = initial.length;
         for (int i = 0; i < n; i++) {
@@ -24,13 +23,8 @@ public class Puzzle {
         return count;
     }
 
-    public void printMatrix(int[][] matrix) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix.length; j++) {
-                System.out.print(matrix[i][j] + " ");
-            }
-            System.out.println();
-        }
+    public int calculateCost(Node n, int[][] initial, int[][] goal){
+        return n.level + manhattanDistance(initial, goal);
     }
 
     public boolean isSafe(int x, int y) {
@@ -42,11 +36,7 @@ public class Puzzle {
             return;
         }
         printPath(root.parent);
-        printMatrix(root.matrix);
-        System.out.println("This is the cost for");
-        System.out.println(root.cost);
-        System.out.println("*************");
-
+        System.out.println(root);
     }
 
     public boolean isSolvable(int[][] matrix) {
@@ -74,31 +64,26 @@ public class Puzzle {
     }
 
     public void solve(int[][] initial, int[][] goal, int x, int y) {
-        PriorityQueue<Node> pq = new PriorityQueue<Node>(1000, (a, b) -> (a.cost + a.level) - (b.cost + b.level));
+        PriorityQueue<Node> pq = new PriorityQueue<Node>(1000, (a, b) -> (a.h1 + a.level) - (b.h1 + b.level));
         Node root = new Node(initial, x, y, x, y, 0, null);
-        root.cost = manhattanDistance(initial, goal);
+        root.h1 = calculateMissplacedTiles(initial, goal);
         pq.add(root);
 
         while (!pq.isEmpty()) {
             Node min = pq.poll();
-            COST_NUMBER += 1;
-            if (min.cost == 0) {
+            if (min.h1 == 0) {
                 printPath(min);
+                System.out.println("This is the cost for");
+                System.out.println(calculateCost(min, initial, goal));
+                System.out.println("*************");
                 return;
             }
 
             for (int i = 0; i < 4; i++) {
                 if (isSafe(min.x + row[i], min.y + col[i])) {
                     Node child = new Node(min.matrix, min.x, min.y, min.x + row[i], min.y + col[i], min.level + 1, min);
-                    child.cost = manhattanDistance(child.matrix, goal);
+                    child.h1 = manhattanDistance(child.matrix, goal);
                     pq.add(child);
-                    System.out.println("cHILD");
-                    printMatrix(child.matrix);
-                    System.out.println("Cost Number");
-                    System.out.println(COST_NUMBER);
-                    System.out.println("MH Distance");
-                    System.out.println(child.cost);
-
                 }
             }
         }
@@ -106,15 +91,29 @@ public class Puzzle {
     public static int manhattanDistance (int[][] initial, int[][] goal) {
         int rows = initial.length;
         int columns = initial[0].length;
+//        System.out.println("rows");
+//        System.out.println(rows);
+//        System.out.println("columns");
+//        System.out.println(columns);
         int dif = 0;
         int result = 0;
 
         for(int i = 0; i < rows; i++) {
             for(int j = 0; j < columns; j++){
-                if(initial[i][j] != 0){
-                    dif = 0;
-                    dif = Math.abs(initial[i][j] - goal[i][j]);
+                if(initial[i][j] != 0 && initial[i][j] != goal[i][j]){
+//                    System.out.println("Different tile");
+//                    System.out.println(initial[i][j]);
+//                    System.out.println("Tile pos");
+//                    System.out.println(getPos(i, j));
+//                    System.out.println("goal pos");
+                    int iTilePos = getPos(i, j);
+                    int gTilePos = getTilePos(initial[i][j], iTilePos, goal);
+//                    System.out.println(getTilePos(initial[i][j], getPos(i, j), goal));
+                    dif = Math.abs(iTilePos - gTilePos);
                     result += dif / rows + dif % columns;
+
+//                    System.out.println("Resutl");
+//                    System.out.println(result);
                 }
             }
         }
@@ -122,20 +121,62 @@ public class Puzzle {
         return result;
     }
 
+    public static int getPos(int xPos, int yPos){
+//        System.out.println("xpos");
+//        System.out.println(xPos);
+
+        switch (xPos) {
+            case 0:
+                return(xPos + yPos);
+            case 1:
+                return(xPos + yPos + 2);
+            case 2:
+                return(xPos + yPos + 4);
+            default:
+                return 0;
+        }
+    }
+
+    public static int getTilePos(int tile, int initTilePos, int[][] goal) {
+        int rows = goal.length;
+        int columns = goal[0].length;
+        int pos = 0;
+
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < columns; j++){
+                if (tile == goal[i][j]){
+                    pos = getPos(i, j);
+                }
+            }
+        }
+        return pos;
+    }
+
     public static void main(String[] args) {
-        int[][] initial = { {1, 2, 3}, {4, 6, 0}, {7, 5, 8} };
+        int[][] i1 = { {1, 2, 3}, {4, 6, 0}, {7, 5, 8} };
+        int[][] i2 = { {4, 1, 2}, {7, 6, 3}, {0, 5, 8} };
+        int[][] i3 = { {4, 1, 2}, {7, 6, 3}, {5, 8, 0} };
+
         int[][] goal    = { {1, 2, 3}, {4, 5, 6}, {7, 8, 0} };
 
-        System.out.println(manhattanDistance(initial,goal));
+        System.out.println("ManhattanDistance 1");
+        System.out.println(manhattanDistance(i1,goal));
         System.out.println("*************");
 
+        System.out.println("ManhattanDistance 2");
+        System.out.println(manhattanDistance(i2,goal));
+        System.out.println("*************");
+
+        System.out.println("ManhattanDistance 3");
+        System.out.println(manhattanDistance(i3,goal));
+        System.out.println("*************");
 
         // White tile coordinate
-        int x = 1, y = 2;
+        int x = 2, y = 0;
 
         Puzzle puzzle = new Puzzle();
-        if (puzzle.isSolvable(initial)) {
-            puzzle.solve(initial, goal, x, y);
+        if (puzzle.isSolvable(i2)) {
+            puzzle.solve(i2, goal, x, y);
         }
         else {
             System.out.println("The given initial is impossible to solve");

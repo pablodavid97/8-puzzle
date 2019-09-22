@@ -7,7 +7,7 @@ public class Node {
     public int x, y;
 
     // Number of misplaced tiles
-    public int cost;
+    public int h1;
 
     // The number of moves so far
     public int level;
@@ -24,10 +24,23 @@ public class Node {
         this.matrix[newX][newY] = this.matrix[x][y] - this.matrix[newX][newY];
         this.matrix[x][y]       = this.matrix[x][y] - this.matrix[newX][newY];
 
-        this.cost = Integer.MAX_VALUE;
+        this.h1 = Integer.MAX_VALUE;
         this.level = level;
         this.x = newX;
         this.y = newY;
+    }
+
+    @Override
+    public String toString() {
+        String s = "";
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                s += matrix[i][j] + " ";
+            }
+            s += "\n";
+        }
+
+        return s;
     }
 
 }
