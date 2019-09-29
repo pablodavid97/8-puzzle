@@ -195,22 +195,6 @@ public class Puzzle {
         else {
             System.out.println("The given initial is impossible to solve");
         }
-        
-        int n = 100;
-        int[] costs = new int[n];
-        ArrayList<Integer[]> puzzles = Fisher_Yates_Array_Shuffling.validatedPuzzlesGenerator(n);
-        for(int i=0;i<n;i++){
-            Integer[] temp = puzzles.get(i);
-            int p = Arrays.asList(temp).indexOf(0);
-            int xi = p/3;
-            int yi = p%3;
-            int [][] m = makeMatrix(temp);
-            Puzzle solver = new Puzzle();
-            costs[i] = solver.solve(m,goal,xi,yi);
-            System.out.println(costs[i]);
-            
-        }
-        //System.out.println(costs.toString());
     }
 
 }
