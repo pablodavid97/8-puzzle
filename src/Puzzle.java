@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Arrays;
 
 public class Puzzle {
 
@@ -63,20 +64,23 @@ public class Puzzle {
         return count % 2 == 0;
     }
 
-    public void solve(int[][] initial, int[][] goal, int x, int y) {
+    public int solve(int[][] initial, int[][] goal, int x, int y) {
         PriorityQueue<Node> pq = new PriorityQueue<Node>(1000, (a, b) -> (a.h1 + a.level) - (b.h1 + b.level));
         Node root = new Node(initial, x, y, x, y, 0, null);
         root.h1 = calculateMissplacedTiles(initial, goal);
         pq.add(root);
-
+         
+         int finalCost = 0;
+         
         while (!pq.isEmpty()) {
             Node min = pq.poll();
             if (min.h1 == 0) {
                 printPath(min);
                 System.out.println("This is the cost for");
-                System.out.println(calculateCost(min, initial, goal));
+                finalCost = calculateCost(min, initial, goal);
+                System.out.println(finalCost);
                 System.out.println("*************");
-                return;
+                return finalCost;
             }
 
             for (int i = 0; i < 4; i++) {
@@ -87,6 +91,7 @@ public class Puzzle {
                 }
             }
         }
+        return finalCost;
     }
     public static int manhattanDistance (int[][] initial, int[][] goal) {
         int rows = initial.length;
@@ -151,6 +156,16 @@ public class Puzzle {
         }
         return pos;
     }
+    
+    public static int[][] makeMatrix(Integer[] arr){
+      /*int s = (int) Math.sqrt(arr.length);
+      int[][] matrix = new int[s][s];*/
+      int[][] matrix = new int[3][3];
+      for(int i=0;i<3;i++)
+         for(int j=0;j<3;j++)
+            matrix[i][j]=arr[i+j];
+      return matrix;
+    }
 
     public static void main(String[] args) {
         int[][] i1 = { {1, 2, 3}, {4, 6, 0}, {7, 5, 8} };
@@ -181,6 +196,16 @@ public class Puzzle {
         else {
             System.out.println("The given initial is impossible to solve");
         }
+        
+        int n = 100;
+        int[] costs = new int[n];
+        ArrayList<Integer[]> puzzles = Fisher_Yates_Array_Shuffling.validatedPuzzlesGenerator(n);
+        for(int i=0;i<n;i++){
+            Integer[] temp = puzzles.get(i);
+            int p = Arrays.asList(temp).indexOf(0);
+            costs[i] = puzzle.solve(makeMatrix(temp),goal,p/3,p%3);
+        }
+        //System.out.println(costs.toString());
     }
 
 }
