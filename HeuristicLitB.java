@@ -167,8 +167,6 @@ public class HeuristicLitB {
             int [][] m = solver.makeMatrix(temp);
             yArray[count] = solver.solve(m,goal,xi,yi);
             }
-
-        }
         //Asi se obtiene los strings a reemplazar el el archivo de la regresión
         for (int j = 0; j<100; j++){
             System.out.println();
