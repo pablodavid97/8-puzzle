@@ -162,8 +162,7 @@ public class Puzzle {
       int[][] matrix = new int[s][s];*/
       int[][] matrix = new int[3][3];
       for(int i=0;i<3;i++)
-         for(int j=0;j<3;j++)
-            matrix[i][j]=arr[i+j];
+         matrix[i]=Arrays.stream(Arrays.copyOfRange(arr,i*3,i*3+3)).mapToInt(Integer::intValue).toArray();
       return matrix;
     }
 
@@ -203,7 +202,13 @@ public class Puzzle {
         for(int i=0;i<n;i++){
             Integer[] temp = puzzles.get(i);
             int p = Arrays.asList(temp).indexOf(0);
-            costs[i] = puzzle.solve(makeMatrix(temp),goal,p/3,p%3);
+            int xi = p/3;
+            int yi = p%3;
+            int [][] m = makeMatrix(temp);
+            Puzzle solver = new Puzzle();
+            costs[i] = solver.solve(m,goal,xi,yi);
+            System.out.println(costs[i]);
+            
         }
         //System.out.println(costs.toString());
     }
