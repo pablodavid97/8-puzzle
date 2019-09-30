@@ -16,7 +16,7 @@ public class HeuristicLitB {
         Random r = new Random();
         double rangeMin = 10;
         double rangeMax = 100;
-        int n = 5;
+        int n = 10;
         ArrayList<Integer[]> puzzles = Fisher_Yates_Array_Shuffling.validatedPuzzlesGenerator(n);
         for (int j = 0; j < n; j++) {
                  Integer[] resObj = puzzles.get(j);
@@ -175,7 +175,7 @@ public class HeuristicLitB {
             System.out.print(XArray[j][2]+"},");
 
         }
-        System.out.println("*************************");
+        System.out.println("\n*************************");
         for (int j = 0; j<n; j++){
             System.out.print(+yArray[j]+",");
         }
