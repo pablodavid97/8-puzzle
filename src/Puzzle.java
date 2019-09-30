@@ -80,6 +80,7 @@ public class Puzzle {
                 finalCost = calculateCost(min, initial, goal);
                 System.out.println(finalCost);
                 System.out.println("*************");
+                System.out.println("Level: "+min.level);
                 return finalCost;
             }
 
